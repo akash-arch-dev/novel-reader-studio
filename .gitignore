@@ -1,0 +1,13 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+
+# Generated local audio files and user data
+audio/
+*.mp3
+
+# OS files
+.DS_Store
+Thumbs.db
