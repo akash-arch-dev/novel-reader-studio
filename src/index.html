@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Novel Reader Studio</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="app">
+    <!-- HOME VIEW -->
+    <div id="homeView" class="view active">
+      <header class="top-bar">
+        <h1>Novel Reader Studio</h1>
+        <div class="home-actions">
+          <button id="openAiSettingsBtn" class="btn secondary">⚙️ AI Editor Settings</button>
+          <button id="createProjectBtn" class="btn primary">+ New Project</button>
+        </div>
+      </header>
+      <main class="content-area">
+        <h2>Your Projects</h2>
+        <div id="projectGrid" class="project-grid"></div>
+      </main>
+    </div>
+
+    <!-- WORKSPACE VIEW -->
+    <div id="workspaceView" class="view">
+      <header class="top-bar">
+        <button id="backToHomeBtn" class="btn secondary">← Back to Projects</button>
+        <h1 id="activeProjectTitle">Project Workspace</h1>
+        <div class="workspace-tabs">
+          <button id="tabEditor" class="tab-btn active">✍️ Dual Text Editor & TTS</button>
+          <button id="tabAudioHub" class="tab-btn">🎧 Audio Studio & Jobs</button>
+        </div>
+      </header>
+
+      <div class="workspace-layout">
+        <aside class="sidebar">
+          <h3>Chapters</h3>
+          <ul id="chapterList"></ul>
+          <button id="addChapterBtn" class="btn primary full-width">+ Add Chapter</button>
+        </aside>
+
+        <!-- DUAL TEXT EDITOR SUB-VIEW -->
+        <main id="editorSubView" class="editor-pane">
+          <div id="editorContainer" class="hidden">
+            <div class="editor-header">
+              <input type="number" id="chapterNumberInput" placeholder="Ch #" min="1">
+              <input type="text" id="chapterTitleInput" placeholder="Chapter Title">
+              
+              <!-- Clean & Curated Multi-Engine Voice Picker -->
+              <select id="chapterVoiceSelect">
+                <optgroup label="✨ Edge Neural (Best Storytelling)">
+                  <option value="hi-IN-MadhurNeural">Madhur (Hindi / Hinglish Male)</option>
+                  <option value="hi-IN-SwaraNeural">Swara (Hindi / Hinglish Female)</option>
+                  <option value="en-IN-PrabhatNeural">Prabhat (Indian English Male)</option>
+                  <option value="en-IN-NeerjaNeural">Neerja (Indian English Female)</option>
+                  <option value="en-US-ChristopherNeural">Christopher (US Storyteller)</option>
+                </optgroup>
+                <optgroup label="🌐 Google Fallback Engine">
+                  <option value="gtts-en">Google English (Standard)</option>
+                  <option value="gtts-hi">Google Hindi (Standard)</option>
+                </optgroup>
+              </select>
+            </div>
+
+            <!-- Dual Column Text Areas -->
+            <div class="dual-editor-grid">
+              <div class="editor-column">
+                <div class="column-header">
+                  <span>English Story Version</span>
+                  <button id="translateBtn" class="btn primary small-btn">✨ Convert to Hinglish via AI</button>
+                </div>
+                <textarea id="englishContentInput" placeholder="Write or paste English story text here... (Auto-saves)"></textarea>
+                <div class="column-footer">
+                  <button id="generateEnglishAudioBtn" class="btn success">⚡ Generate English Audio</button>
+                </div>
+              </div>
+
+              <div class="editor-column">
+                <div class="column-header">
+                  <span>Hinglish / Translated Version</span>
+                  <span id="aiStatus" class="ai-status">Ready</span>
+                </div>
+                <textarea id="hinglishContentInput" placeholder="Hinglish / translated version will appear here or edit manually..."></textarea>
+                <div class="column-footer">
+                  <button id="generateHinglishAudioBtn" class="btn success">⚡ Generate Hinglish Audio</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="editor-footer">
+              <span id="autoSaveIndicator" class="autosave-status">All changes saved automatically</span>
+              <span id="ttsStatus" class="status-indicator"></span>
+            </div>
+          </div>
+          <div id="noChapterPlaceholder" class="placeholder">
+            Select a chapter from the sidebar or add a new one to start writing.
+          </div>
+        </main>
+
+        <!-- AUDIO STUDIO HUB SUB-VIEW -->
+        <main id="audioHubSubView" class="editor-pane hidden">
+          <h2>Active & Generated Audio Versions</h2>
+          <p class="subtitle">Monitor background generation jobs, listen to different versions, or delete takes.</p>
+          <div id="audioVersionList" class="audio-version-grid"></div>
+        </main>
+      </div>
+    </div>
+
+    <!-- Persistent Global Audio Player with Skip Controls & Minimize Toggle -->
+    <footer id="globalPlayerBar" class="player-bar hidden">
+      <div class="player-header-bar">
+        <span id="playingChapterTitle" class="player-info">No chapter loaded</span>
+        <button id="togglePlayerMinimizeBtn" class="btn secondary small-btn">▼ Minimize</button>
+      </div>
+      <div id="playerBody" class="player-body">
+        <div class="player-controls-group">
+          <button id="skipBackwardBtn" class="btn secondary" title="Skip 10 seconds back">⏪ -10s</button>
+          <audio id="globalAudioPlayer" controls></audio>
+          <button id="skipForwardBtn" class="btn secondary" title="Skip 10 seconds forward">10s ⏩</button>
+          <div class="player-options">
+            <label>Speed: 
+              <select id="playbackSpeedSelect">
+                <option value="0.75">0.75x</option>
+                <option value="1" selected>1.0x</option>
+                <option value="1.25">1.25x</option>
+                <option value="1.5">1.5x</option>
+                <option value="2">2.0x</option>
+              </select>
+            </label>
+            <button id="saveBookmarkBtn" class="btn secondary">📌 Bookmark</button>
+            <span id="bookmarkStatus" class="bookmark-tip"></span>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <!-- New Project Modal -->
+    <div id="projectModal" class="modal hidden">
+      <div class="modal-content">
+        <h3>Create New Project</h3>
+        <input type="text" id="newProjectName" placeholder="Project Name">
+        <div class="modal-actions">
+          <button id="cancelModalBtn" class="btn secondary">Cancel</button>
+          <button id="confirmCreateProjectBtn" class="btn primary">Create</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- AI Settings Modal -->
+    <div id="aiSettingsModal" class="modal hidden">
+      <div class="modal-content wide-modal">
+        <h3>Gemini AI Editor Settings</h3>
+        <label>Gemini API Key:
+          <input type="password" id="apiKeyInput" placeholder="Enter your Gemini API Key">
+        </label>
+        <label>Translation / Conversion Prompt:
+          <textarea id="aiPromptInput" class="prompt-textarea" placeholder="Enter prompt instructions for English to Hinglish translation..."></textarea>
+        </label>
+        <div class="modal-actions">
+          <button id="cancelAiSettingsBtn" class="btn secondary">Cancel</button>
+          <button id="saveAiSettingsBtn" class="btn primary">Save Settings</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="renderer.js"></script>
+</body>
+</html>

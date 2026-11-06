@@ -1,0 +1,36 @@
+{
+  "name": "novel-reader-app",
+  "version": "1.0.0",
+  "description": "Desktop Novel Reader with Python edge-tts backend and AI translation",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build:linux": "electron-builder --linux"
+  },
+  "devDependencies": {
+    "electron-builder": "^26.18.0"
+  },
+  "build": {
+    "appId": "com.xenon.novelreader",
+    "productName": "Novel Reader Studio",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "src/**/*",
+      "backend/**/*",
+      "venv/**/*"
+    ],
+    "linux": {
+      "target": [
+        "AppImage"
+      ],
+      "category": "Office"
+    }
+  },
+  "dependencies": {
+    "gtts": "^0.2.1"
+  }
+}
